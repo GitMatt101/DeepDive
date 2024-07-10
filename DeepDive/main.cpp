@@ -140,7 +140,6 @@ void drawScene(void) {
 		glUniformMatrix4fv(uniformModelMatrix, 1, GL_FALSE, value_ptr(*mesh->getModel()));
 		glBindVertexArray(*mesh->getVAO());
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, (mesh->getIndices()->size() - 1) * sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
@@ -165,7 +164,6 @@ void drawScene(void) {
 			glUniformMatrix4fv(uniformModelMatrix, 1, GL_FALSE, value_ptr(*subMesh->getModel()));
 			glBindVertexArray(*subMesh->getVAO());
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawElements(GL_TRIANGLES, (subMesh->getIndices()->size() - 1) * sizeof(GLuint), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
