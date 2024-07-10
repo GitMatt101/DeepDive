@@ -13,6 +13,7 @@
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
+pair<vector<Mesh*>, vector<Mesh*>> sharks;
 Mesh* cubeMap;
 View camera;
 Perspective cameraPerspective;
@@ -51,6 +52,7 @@ int mouseX;
 int mouseY;
 
 float lightAngle = 0.0f;
+float sharkAngle = 0.0f;
 float Theta = -90.0f;
 float Phi = 0.0f;
 
@@ -150,8 +152,20 @@ void drawScene(void) {
 
 void update(int value)
 {
+	float seconds = 5.0f;
+	float angle = 360.0f / ((float)FPS * 5.0f);
+	float circumference = 2.0f * (float)PI * 200.0f;
+	float movement = circumference / ((float)FPS * seconds);
+	for (Mesh* mesh : sharks.first) {
+		mesh->setModel(rotate(*mesh->getModel(), radians(angle), vec3(0.0f, 0.0f, 1.0f)));
+		mesh->setModel(translate(*mesh->getModel(), vec3(1.0f, 0.0f, 0.0f) * movement));
+	}
+	for (Mesh* mesh : sharks.second) {
+		mesh->setModel(rotate(*mesh->getModel(), radians(angle), vec3(0.0f, 0.0f, 1.0f)));
+		mesh->setModel(translate(*mesh->getModel(), vec3(1.0f, 0.0f, 0.0f) * movement));
+	}
 	lightAngle += 1.0f;
-	glutTimerFunc(100, update, 0);
+	glutTimerFunc(1000.0f / (float)FPS, update, 0);
 	glutPostRedisplay();
 }
 

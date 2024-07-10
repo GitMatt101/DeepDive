@@ -13,3 +13,5 @@
 #define SKYBOX_PATH "Skybox/"
 
 #define TEXTURE_PATH "Textures/"
+
+#define FPS 30

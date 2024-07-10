@@ -15,6 +15,7 @@ extern unsigned int programId_cubemap;
 extern unsigned int cubeMapTexture;
 
 extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
+extern pair<vector<Mesh*>, vector<Mesh*>> sharks;
 extern Mesh* cubeMap;
 extern View camera;
 extern Perspective cameraPerspective;
@@ -52,7 +53,7 @@ void initScene(void) {
 	floor->setNormals(normals);
 	floor->setTextureCoordinates(textureCoordinates);
 	floor->setModel(scale(*floor->getModel(), vec3(1000.0f, 1.0f, 1000.0f)));
-	floor->setModel(translate(*floor->getModel(), vec3(0.0f, -10.0f, 0.0f)));
+	floor->setModel(translate(*floor->getModel(), vec3(0.0f, -20.0f, 0.0f)));
 	floor->setName("Terreno");
 	floor->setSphereRadius(2.0f);
 	floor->setTexture(loadTexture(((string)TEXTURE_PATH + "sand.jpg").c_str(), false));
@@ -65,31 +66,34 @@ void initScene(void) {
 	loadAssImp((MESH_PATH + (string)"tiger_shark.obj").c_str(), &mesh);
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
-		//subMesh->setModel(translate(*subMesh->getModel(), vec3(3.0f, 0.0f, 2.0f)));
+		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -70.0f, 200.0f)));
 		subMesh->setModel(rotate(*subMesh->getModel(), radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)));
 		subMesh->setTexture(loadTexture(((string)TEXTURE_PATH + "tiger_shark_skin.jpg").c_str(), false));
 		subMesh->setShader(shaders[2]);
 		subMesh->toggleUseTexture();
 	}
+	sharks.first = mesh;
 	scene.second.push_back(mesh);
 
 	mesh.clear();
 	loadAssImp((MESH_PATH + (string)"hammerhead_shark.obj").c_str(), &mesh);
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
-		//subMesh->setModel(translate(*subMesh->getModel(), vec3(3.0f, 0.0f, 2.0f)));
-		subMesh->setModel(rotate(*subMesh->getModel(), radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)));
+		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -50.0f, -200.0f)));
+		subMesh->setModel(rotate(*subMesh->getModel(), radians(90.0f), vec3(1.0f, 0.0f, 0.0f)));
+		subMesh->setModel(rotate(*subMesh->getModel(), radians(180.0f), vec3(0.0f, 1.0f, 0.0f)));
 		subMesh->setTexture(loadTexture(((string)TEXTURE_PATH + "hammerhead_shark_skin.jpg").c_str(), false));
 		subMesh->setShader(shaders[2]);
 		subMesh->toggleUseTexture();
 	}
+	sharks.second = mesh;
 	scene.second.push_back(mesh);
 
 	mesh.clear();
-	loadAssImp((MESH_PATH + (string)"treasure_chest.obj").c_str(), &mesh);
+	loadAssImp((MESH_PATH + (string)"12328_Statue_v1_L2.obj").c_str(), &mesh);
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
-		//subMesh->setModel(translate(*subMesh->getModel(), vec3(3.0f, 0.0f, 2.0f)));
+		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -200.0f, 0.0f)));
 		subMesh->setModel(rotate(*subMesh->getModel(), radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)));
 		subMesh->setShader(shaders[2]);
 	}
