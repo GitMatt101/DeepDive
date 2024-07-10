@@ -62,7 +62,6 @@ void initScene(void) {
 	floor->setModel(scale(*floor->getModel(), vec3(1000.0f, 1.0f, 1000.0f)));
 	floor->setModel(translate(*floor->getModel(), vec3(0.0f, -20.0f, 0.0f)));
 	floor->setName("Terreno");
-	floor->setSphereRadius(2.0f);
 	floor->setTexture(loadTexture(((string)TEXTURE_PATH + "sand.jpg").c_str(), false));
 	floor->toggleUseTexture();
 	floor->setShader(shaders[2]);
@@ -70,10 +69,10 @@ void initScene(void) {
 	scene.first.push_back(floor);
 
 	vector<Mesh*> mesh;
-	loadAssImp((MESH_PATH + (string)"tiger_shark.obj").c_str(), &mesh);
+	loadAssImp((MESH_PATH + (string)"tiger_shark.obj").c_str(), &mesh, "Squalo Tigre");
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
-		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -70.0f, 200.0f)));
+		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -80.0f, 200.0f)));
 		subMesh->setModel(rotate(*subMesh->getModel(), radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)));
 		subMesh->setTexture(loadTexture(((string)TEXTURE_PATH + "tiger_shark_skin.jpg").c_str(), false));
 		subMesh->setShader(shaders[2]);
@@ -83,7 +82,7 @@ void initScene(void) {
 	scene.second.push_back(mesh);
 
 	mesh.clear();
-	loadAssImp((MESH_PATH + (string)"hammerhead_shark.obj").c_str(), &mesh);
+	loadAssImp((MESH_PATH + (string)"hammerhead_shark.obj").c_str(), &mesh, "Squalo Martello");
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
 		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -50.0f, -200.0f)));
@@ -97,7 +96,7 @@ void initScene(void) {
 	scene.second.push_back(mesh);
 
 	mesh.clear();
-	loadAssImp((MESH_PATH + (string)"12328_Statue_v1_L2.obj").c_str(), &mesh);
+	loadAssImp((MESH_PATH + (string)"12328_Statue_v1_L2.obj").c_str(), &mesh, "Statua");
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
 		subMesh->setModel(translate(*subMesh->getModel(), vec3(0.0f, -200.0f, 0.0f)));
@@ -105,6 +104,23 @@ void initScene(void) {
 		subMesh->setShader(shaders[2]);
 	}
 	scene.second.push_back(mesh);
+
+	mesh.clear();
+	int treasures = 5;
+	float step = 360.0f / (float)treasures;
+	for (int i = 1; i <= 5; i++) {
+		loadAssImp((MESH_PATH + (string)"13457_Pile_of_Treasure_v1_L1.obj").c_str(), &mesh, "Tesoro");
+		for (Mesh* subMesh : mesh) {
+			subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
+			subMesh->setModel(translate(*subMesh->getModel(), vec3(cos(radians(step * i)) * 50.0f, -200.0f, sin(radians(step * i)) * 50.0f)));
+			subMesh->setModel(rotate(*subMesh->getModel(), radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)));
+			subMesh->setShader(shaders[1]);
+			subMesh->setMaterialType(MaterialType::YELLOW);
+			subMesh->setMaterial(materials[subMesh->getMaterialType()]);
+		}
+		scene.second.push_back(mesh);
+		mesh.clear();
+	}
 
 	vertices.clear();
 	indices.clear();
@@ -129,6 +145,7 @@ void initScene(void) {
 		bubble->setTextureCoordinates(textureCoordinates);
 		bubble->setShader(shaders[1]);
 		bubble->setModel(scale(*bubble->getModel(), vec3(0.5f, 0.5f, 0.5f)));
+		bubble->setName("Bolla");
 		initMeshVAO(bubble);
 	}
 

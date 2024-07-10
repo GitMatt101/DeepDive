@@ -2,4 +2,4 @@
 #include "../lib.h"
 #include "mesh.hpp"
 
-void loadAssImp(const char* path, vector<Mesh*>* mesh);
+void loadAssImp(const char* path, vector<Mesh*>* mesh, string name);

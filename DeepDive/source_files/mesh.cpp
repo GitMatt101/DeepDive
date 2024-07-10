@@ -16,9 +16,9 @@ Mesh::Mesh() {
 	this->shader = {"NONE", 0};
 	this->materialType = MaterialType::NO_MATERIAL;
 	this->material = Material();
-	this->anchorObj = vec4();
-	this->anchorWorld = vec4();
-	this->sphereRadius = 0.0f;
+	this->anchorObj = vec4(1.0f);
+	this->anchorWorld = vec4(0.0f);
+	this->sphereRadius = 2.0f;
 	this->selected = false;
 	this->useTexture = false;
 }

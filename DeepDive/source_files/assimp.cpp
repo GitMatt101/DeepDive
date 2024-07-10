@@ -1,6 +1,6 @@
 #include "../header_files/assimp.hpp"
 
-void loadAssImp(const char* path, vector<Mesh*>* mesh) {
+void loadAssImp(const char* path, vector<Mesh*>* mesh, string name) {
 	Assimp::Importer importer;
 
 	const aiScene* aiScene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -11,6 +11,7 @@ void loadAssImp(const char* path, vector<Mesh*>* mesh) {
 	for (unsigned int i = 0; i < aiScene->mNumMeshes; i++)
 	{
 		Mesh* subMesh = new Mesh();
+		subMesh->setName(name);
 		aiMesh = aiScene->mMeshes[i];
 		aiMaterial* aiMaterial = aiScene->mMaterials[aiMesh->mMaterialIndex];
 

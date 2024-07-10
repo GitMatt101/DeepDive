@@ -6,6 +6,8 @@ extern vector<Material> materials;
 extern vector<Shader> shaders;
 extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 
+extern vector<Material> materials;
+
 void materialMenu(int option);
 void shaderMenu(int option);
 void mainMenu(int option);
@@ -40,6 +42,21 @@ void materialMenu(int option) {
 		if (mesh->isSelected())
 			mesh->setMaterialType((MaterialType)option);
 	}
+	vector<Mesh*> selectedMeshes;
+	for (vector<Mesh*> mesh : scene.second) {
+		for (Mesh* subMesh : mesh) {
+			if (subMesh->isSelected()) {
+				selectedMeshes = mesh;
+				break;
+			}
+		}
+	}
+	if (selectedMeshes.size() > 0) {
+		for (Mesh* subMesh : selectedMeshes) {
+			subMesh->setMaterialType((MaterialType)option);
+			subMesh->setMaterial(materials[(MaterialType)option]);
+		}
+	}
 	glutPostRedisplay();
 }
 
@@ -47,6 +64,19 @@ void shaderMenu(int option) {
 	for (Mesh* mesh : scene.first) {
 		if (mesh->isSelected())
 			mesh->setShader(shaders[option]);
+	}
+	vector<Mesh*> selectedMeshes;
+	for (vector<Mesh*> mesh : scene.second) {
+		for (Mesh* subMesh : mesh) {
+			if (subMesh->isSelected()) {
+				selectedMeshes = mesh;
+				break;
+			}
+		}
+	}
+	if (selectedMeshes.size() > 0) {
+		for (Mesh* subMesh : selectedMeshes)
+			subMesh->setShader(shaders[option]);
 	}
 	glutPostRedisplay();
 }

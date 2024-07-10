@@ -83,6 +83,8 @@ void drawScene(void) {
 
 	glUseProgram(programId_reflection);
 	for (Mesh* bubble : bubbles) {
+		bubble->setAnchorWorld(*bubble->getAnchorObj());
+		bubble->setAnchorWorld(*bubble->getModel() * *bubble->getAnchorWorld());
 		glUniformMatrix4fv(uniformProjectionMatrixReflection, 1, GL_FALSE, value_ptr(projectionMatrix));
 		glUniformMatrix4fv(uniformModelMatrixReflection, 1, GL_FALSE, value_ptr(*bubble->getModel()));
 		glUniformMatrix4fv(uniformViewMatrixReflection, 1, GL_FALSE, value_ptr(view));
@@ -158,8 +160,22 @@ void drawScene(void) {
 
 	for (Mesh* mesh : scene.first) {
 		if (mesh->isSelected()) {
-			renderText(programId_text, projectionMatrix_text, "Selected Object:", textVAO, textVBO, 10.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
-			renderText(programId_text, projectionMatrix_text, mesh->getName(), textVAO, textVBO, 190.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+			renderText(programId_text, projectionMatrix_text, "Oggetto Selezionato:", textVAO, textVBO, 10.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+			renderText(programId_text, projectionMatrix_text, mesh->getName(), textVAO, textVBO, 250.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+		}
+	}
+	for (vector<Mesh*> mesh : scene.second) {
+		for (Mesh* subMesh : mesh) {
+			if (subMesh->isSelected()) {
+				renderText(programId_text, projectionMatrix_text, "Oggetto Selezionato:", textVAO, textVBO, 10.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+				renderText(programId_text, projectionMatrix_text, subMesh->getName(), textVAO, textVBO, 250.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+			}
+		}
+	}
+	for (Mesh* bubble : bubbles) {
+		if (bubble->isSelected()) {
+			renderText(programId_text, projectionMatrix_text, "Oggetto Selezionato:", textVAO, textVBO, 10.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
+			renderText(programId_text, projectionMatrix_text, bubble->getName(), textVAO, textVBO, 250.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
 		}
 	}
 	glutSwapBuffers();
@@ -181,6 +197,7 @@ void update(int value)
 		mesh->setModel(translate(*mesh->getModel(), vec3(1.0f, 0.0f, 0.0f) * movement));
 	}
 
+	// Movimento delle bolle
 	float bubbleMovement = 0.1f;
 	static float currentPosition = 0.0f;
 	static float cyclic = 0.0f;

@@ -9,6 +9,7 @@ using namespace std;
 #define TRACK_BALL_SPEED 50.0f
 
 extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
+extern vector<Mesh*> bubbles;
 extern View camera;
 extern Perspective cameraPerspective;
 extern mat4 projectionMatrix;
@@ -32,8 +33,19 @@ void applyTransformation(Mesh* mesh, float transformationValue);
 
 void keyboardEvent(unsigned char key, int x, int y) {
 	Mesh* selectedMesh = NULL;
+	vector<Mesh*> selectedMeshes;
 	for (Mesh* mesh : scene.first)
 		if (mesh->isSelected()) selectedMesh = mesh;
+	for (vector<Mesh*> mesh : scene.second) {
+		for (Mesh* subMesh : mesh) {
+			if (subMesh->isSelected()) {
+				selectedMeshes = mesh;
+				break;
+			}
+		}
+	}
+	for (Mesh* bubble : bubbles)
+		if (bubble->isSelected()) selectedMesh = bubble;
 
 	switch (key) {
 		case 27:
@@ -84,10 +96,18 @@ void keyboardEvent(unsigned char key, int x, int y) {
 		case '+':	// Increase
 			if (selectedMesh != NULL)
 				applyTransformation(selectedMesh, 0.05f);
+			else if (selectedMeshes.size() != 0) {
+				for (Mesh* mesh : selectedMeshes)
+					applyTransformation(mesh, 0.05f);
+			}
 			break;
 		case '-':	// Decrease
 			if (selectedMesh != NULL)
 				applyTransformation(selectedMesh, -0.05f);
+			else if (selectedMeshes.size() != 0) {
+				for (Mesh* mesh : selectedMeshes)
+					applyTransformation(mesh, -0.05f);
+			}
 			break;
 		default:
 			break;
@@ -116,6 +136,12 @@ void mouse(int button, int state, int x, int y) {
 			Mesh* previousIntersectedMesh = NULL;
 			for (Mesh* mesh : scene.first)
 				if (mesh->isSelected()) mesh->toggleSelection();
+			for (vector<Mesh*> mesh : scene.second) {
+				for (Mesh* subMesh : mesh)
+					if (subMesh->isSelected()) subMesh->toggleSelection();
+			}
+			for (Mesh* bubble : bubbles)
+				if (bubble->isSelected()) bubble->toggleSelection();
 
 			for (Mesh* mesh : scene.first) {
 				double intersectionDistance = getIntersectionDistance(camera.position, ray, mesh);
@@ -124,6 +150,28 @@ void mouse(int button, int state, int x, int y) {
 						previousIntersectedMesh->toggleSelection();
 					mesh->toggleSelection();
 					previousIntersectedMesh = mesh;
+					closestIntersection = intersectionDistance;
+				}
+			}
+			for (vector<Mesh*> mesh : scene.second) {
+				for (Mesh* subMesh : mesh) {
+					double intersectionDistance = getIntersectionDistance(camera.position, ray, subMesh);
+					if (intersectionDistance > 0.0f && (intersectionDistance < closestIntersection || previousIntersectedMesh == NULL)) {
+						if (previousIntersectedMesh != NULL)
+							previousIntersectedMesh->toggleSelection();
+						subMesh->toggleSelection();
+						previousIntersectedMesh = subMesh;
+						closestIntersection = intersectionDistance;
+					}
+				}
+			}
+			for (Mesh* bubble : bubbles) {
+				double intersectionDistance = getIntersectionDistance(camera.position, ray, bubble);
+				if (intersectionDistance > 0.0f && (intersectionDistance < closestIntersection || previousIntersectedMesh == NULL)) {
+					if (previousIntersectedMesh != NULL)
+						previousIntersectedMesh->toggleSelection();
+					bubble->toggleSelection();
+					previousIntersectedMesh = bubble;
 					closestIntersection = intersectionDistance;
 				}
 			}
