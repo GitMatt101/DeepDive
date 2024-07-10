@@ -1,36 +1,36 @@
 #pragma once
 #include "../lib.h"
 
-// Enum used to identify the working axis.
+// Assi di lavoro per le trasformazioni
 const enum Axis { X, Y, Z };
 
-// Enum used to identify the current transformation in use.
+// Trasformazioni
 const enum Transformation { TRANSLATION, ROTATION, SCALE };
 
 /*
-* Handles all keyboard events.
+* Gestisce tutti gli eventi con la tastiera.
 * 
-* @param key - The pressed key.
-* @param x - The x value of the cursor when the key is pressed.
-* @param y - The y value of the cursor when the key is pressed.
+* @param key - Tasto premuto.
+* @param x - X del cursore quando il tasto viene premuto.
+* @param y - Y del cursore quando il tasto viene premuto.
 */
 void keyboardEvent(unsigned char key, int x, int y);
 
 /*
-* Handles zoom when the mouse wheel is used.
+* Gestisce lo zoom con la rotella del mouse.
 *
-* @param wheel - The wheel number.
-* @param direction - The direction of the scrolling (+1 means forward, -1 means backward)
-* @param x - The x value of the cursor when the wheel is used.
-* @param y - The y value of the cursor when the wheel is used.
+* @param wheel - Numero della rotella.
+* @param direction - Direzione di scorrimento della rotella (+1 avanti, -1 indietro)
+* @param x - X del cursore quando la rotella viene usata.
+* @param y - Y del cursore quando la rotella viene usata.
 */
 void zoom(int wheel, int direction, int x, int y);
 
 /*
-* Handles mouse clicks to select shapes on the screen.
+* Gestisce tutti gli eventi con il mouse.
 * 
-* @param button - The pressed button (left click, right click, mouse wheel click).
-* @param x - The x value of the cursor when the button is pressed.
-* @param y - The y value of the cursor when the button is pressed.
+* @param button - Pulsante premuto.
+* @param x - X del cursore quando avviene un click.
+* @param x - X del cursore quando avviene un click.
 */
 void mouse(int button, int state, int x, int y);

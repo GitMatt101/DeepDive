@@ -1,24 +1,29 @@
 #pragma once
 
-// The speed at which the camera moves.
+// Velocità di movimento della telecamera
 #define CAMERA_SPEED 0.5f
 
-// Moves the camera forward (+z).
+// Muove la telecamera in avanti
 void moveCameraForward();
 
-// Moves the camera backward (-z).
+// Muove la telecamera indietro
 void moveCameraBackward();
 
-// Moves the camera to the right (+x).
+// Muove la telecamera a destra
 void moveCameraRight();
 
-// Moves the camera to the left (-x).
+// Muove la telecamera a sinistra
 void moveCameraLeft();
 
-// Moves the camera upward (+y).
+// Muove la telecamera in alto
 void moveCameraUpward();
 
-// Moves the camera downward (-y).
+// Muove la telecamera in basso
 void moveCameraDownward();
 
+/**
+* Funzione Glut per guardare la scena muovendo il mouse.
+* @param x - X del cursore.
+* @param y - Y del cursore.
+*/
 void passiveCameraMovement(int x, int y);

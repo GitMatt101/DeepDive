@@ -8,6 +8,7 @@ extern int mouseY;
 extern float Theta;
 extern float Phi;
 
+// Ottiene la direzione in cui sta guardando la telecamera.
 vec4 getDirection();
 
 void moveCameraForward() {
@@ -60,10 +61,10 @@ void passiveCameraMovement(int x, int y) {
 
 	xoffset *= alfa;
 	yoffset *= alfa;
-	Theta += xoffset;   //Aggiorno l'angolo Theta sommandogli l'offset della posizione x del mouse
-	Phi += yoffset;  //Aggiorno l'angolo Phi sommandogli l'offset della posizione y del mouse 
+	Theta += xoffset;	//Aggiorno l'angolo Theta sommandogli l'offset della posizione x del mouse
+	Phi += yoffset;		//Aggiorno l'angolo Phi sommandogli l'offset della posizione y del mouse 
 
-	// Facciamo si' che l'angolo di Phi vari tra -90 e 90.
+	// L'angolo di Phi varia tra -90 e 90.
 	if (Phi > 90.0f)
 		Phi = 90.0f;
 	if (Phi < -90.0f)
@@ -74,7 +75,7 @@ void passiveCameraMovement(int x, int y) {
 	front.x = cos(radians(Theta)) * cos(radians(Phi));
 	front.y = sin(radians(Phi));
 	front.z = sin(radians(Theta)) * cos(radians(Phi));
-	//Considero la direzione normalizzata (nota la quarta componente uguale a 0 indica una direzione
+	//Considero la direzione normalizzata (nota la quarta componente uguale a 0 indica una direzione)
 	camera.direction = vec4(normalize(front), 0.0); //Aggiorno la direzione della telecamera
 	camera.target = camera.position + camera.direction; //aggiorno il punto in cui guarda la telecamera
 

@@ -28,37 +28,37 @@ GLuint ShaderMaker::createProgram(char* vertexFile, char* fragmentFile)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// Read vertex shader code
+	// Legge il codice del vertex shader
 	GLchar* vertexShader = readShaderSource(vertexFile);
-	// Create an ID for vertex shader
+	// Crea un id per il vertex shader
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	// Link vertex shader code to its ID
+	// Collega il codice all'id
 	glShaderSource(vertexShaderID, 1, (const char**)&vertexShader, NULL);
-	// Compile vertex shader
+	// Compila il codice
 	glCompileShader(vertexShaderID);
 	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-		fprintf(stderr, "VERTEX SHADER ERROR\n%s\n", infoLog);
+		fprintf(stderr, "ERRORE DI COMPILAZIONE NEL VERTEX SHADER\n%s\n", infoLog);
 	}
 
-	// Read fragment shader code
+	// Legge il codice del fragment shader
 	const GLchar* FragmentShader = readShaderSource(fragmentFile);
-	// Create an ID for fragment shader
+	// Crea un id per il fragment shader
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-	// Link fragment shader code to its ID
+	// Collega il codice all'id
 	glShaderSource(fragmentShaderID, 1, (const char**)&FragmentShader, NULL);
-	// Compile fragment shader
+	// Compila il codice
 	glCompileShader(fragmentShaderID);
 	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShaderID, 512, NULL, infoLog);
-		fprintf(stderr, "FRAGMENT SHADER ERROR\n%s\n", infoLog);
+		fprintf(stderr, "ERRORE DI COMPILAZIONE NEL FRAGMENT SHADER\n%s\n", infoLog);
 	}
 
 	if (glGetError() != GL_NO_ERROR) exit(-1);
 
-	// Create an ID for the whole program
+	// Create l'id per il programma che utilizzerà gli shader forniti
 	GLuint programId = glCreateProgram();
 
 	glAttachShader(programId, vertexShaderID);

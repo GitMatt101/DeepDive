@@ -1,16 +1,19 @@
 #pragma once
 
-// Initializes the shaders
+// Inizializza lo ShaderMaker
 void initShader(void);
 
-// Initializes the scene
+// Initializza la scena
 void initScene(void);
 
-// Initializes the camera
+// Initializes tla telecamera
 void initCamera(void);
 
+// Inizializza i materiali
 void initMaterials(void);
 
+// Inizializza le shader
 void initShaders(void);
 
+// Inizializza la CubeMap per la SkyBox
 void initCubeMap(void);

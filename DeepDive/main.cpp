@@ -12,27 +12,33 @@
 #pragma warning(disable : 4996)
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+// Vettori per la gestione della scena
 pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 pair<vector<Mesh*>, vector<Mesh*>> sharks;
 vector<Mesh*> bubbles;
-Mesh* cubeMap;
+Mesh* skybox;
+
+// Oggetti per la navigazione della scena
 View camera;
 Perspective cameraPerspective;
 
+// Parametri per la gestione delle mesh
 vector<Material> materials;
 vector<Shader> shaders;
 LightPoint light;
-LightShaderUniform uniformLight = {};
 
+// Matrici
 mat4 projectionMatrix;
 mat4 projectionMatrix_text;
 mat4 view;
 
+// Id dei programmi
 unsigned int programId;
 unsigned int programId_text;
 unsigned int programId_cubemap;
 unsigned int programId_reflection;
 
+// Parametri uniform per gestire le variabili dentro ai file shader
 unsigned int uniformProjectionMatrix, uniformProjectionMatrixCubeMap, uniformProjectionMatrixReflection;
 unsigned int uniformViewMatrix, uniformViewMatrixCubeMap, uniformViewMatrixReflection;
 unsigned int uniformModelMatrix, uniformModelMatrixReflection;
@@ -41,7 +47,9 @@ unsigned int uniformShader;
 unsigned int uniformTime;
 unsigned int uniformTexture;
 unsigned int uniformCubeMapReflection;
+LightShaderUniform uniformLight = {};
 
+// VAO e VBO per testo e skybox
 GLuint textVAO;
 GLuint textVBO;
 GLuint skyboxVAO;
@@ -50,37 +58,42 @@ GLuint skyboxEBO;
 
 unsigned int cubeMapTexture;
 
-bool movingTrackBall = false;
+// Coordinate del mouse utilizzate per muovere la telecamera
 int mouseX;
 int mouseY;
 
+// Angoli utilizzati per lil movimento della luce e della telecamera
 float lightAngle = 0.0f;
-float sharkAngle = 0.0f;
 float Theta = -90.0f;
 float Phi = 0.0f;
 
+// Stringhe utilizzate per gestire le trasformazioni
 string transformation = "Translation";
 string workingAxis = "X";
 
 void drawScene(void) {
+	// Imposta la vista
 	projectionMatrix_text = ortho(0.0f, (float)WIDTH, 0.0f, (float)HEIGHT);
 	projectionMatrix = perspective(radians(cameraPerspective.fov), cameraPerspective.aspect, cameraPerspective.nearPlane, cameraPerspective.farPlane);
 	view = lookAt(vec3(camera.position), vec3(camera.target), vec3(camera.upVector));
 
+	// Resetta il colore di sfondo
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Attiva la skybox
 	glDepthMask(GL_FALSE);
 	glUseProgram(programId_cubemap);
 	glUniform1i(glGetUniformLocation(programId_cubemap, "skybox"), 0);
 	glUniformMatrix4fv(uniformProjectionMatrixCubeMap, 1, GL_FALSE, value_ptr(projectionMatrix));
 	glUniformMatrix4fv(uniformViewMatrixCubeMap, 1, GL_FALSE, value_ptr(view));
-	glBindVertexArray(*cubeMap->getVAO());
+	glBindVertexArray(*skybox->getVAO());
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
-	glDrawElements(GL_TRIANGLES, cubeMap->getIndices()->size() * sizeof(GLuint), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, skybox->getIndices()->size() * sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glDepthMask(GL_TRUE);
 
+	// Renderizza le bolle utilizzando lo shader per la riflessione della skybox
 	glUseProgram(programId_reflection);
 	for (Mesh* bubble : bubbles) {
 		bubble->setAnchorWorld(*bubble->getAnchorObj());
@@ -95,6 +108,7 @@ void drawScene(void) {
 		glBindVertexArray(0);
 	}
 
+	// Imposta l'id del programma per utilizzare le shader per le mesh
 	glUseProgram(programId);
 	glPointSize(10.0f);
 
@@ -117,6 +131,7 @@ void drawScene(void) {
 		glUniform3fv(uniformLight.material_specular, 1, value_ptr(materials[mesh->getMaterialType()].specular));
 		glUniform1f(uniformLight.material_shininess, materials[mesh->getMaterialType()].shininess);
 
+		// Se la texture è attiva allora la applica sulla mesh
 		if (mesh->isUseTextureActive()) {
 			glUniform1i(uniformTexture, 0);
 			glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
@@ -141,6 +156,7 @@ void drawScene(void) {
 			glUniform3fv(uniformLight.material_specular, 1, value_ptr(subMesh->getMaterial().specular));
 			glUniform1f(uniformLight.material_shininess, subMesh->getMaterial().shininess);
 
+			// Se la texture è attiva allora la applica sulla mesh
 			if (subMesh->isUseTextureActive()) {
 				glUniform1i(uniformTexture, 0);
 				glBindTexture(GL_TEXTURE_2D, subMesh->getTexture());
@@ -155,9 +171,11 @@ void drawScene(void) {
 		}
 	}
 
+	// Renderizza il testo per le trasformazioni
 	renderText(programId_text, projectionMatrix_text, transformation, textVAO, textVBO, 10.0f, (float)HEIGHT - 30.0f, 0.5f, vec3(1.0f, 0.0f, 1.0f));
 	renderText(programId_text, projectionMatrix_text, workingAxis, textVAO, textVBO, 10.0f, (float)HEIGHT - 60.0f, 0.5f, vec3(1.0f, 0.0f, 1.0f));
 
+	// Renderizza il testo per gli oggetti cliccati
 	for (Mesh* mesh : scene.first) {
 		if (mesh->isSelected()) {
 			renderText(programId_text, projectionMatrix_text, "Oggetto Selezionato:", textVAO, textVBO, 10.0f, (float)HEIGHT - 90.0f, 0.5f, vec3(1.0f, 0.0f, 0.2f));
@@ -249,10 +267,10 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// Parametri per le mesh
 	uniformProjectionMatrix = glGetUniformLocation(programId, "Projection");
 	uniformModelMatrix = glGetUniformLocation(programId, "Model");
 	uniformViewMatrix = glGetUniformLocation(programId, "View");
-
 	uniformShader = glGetUniformLocation(programId, "shader");
 	uniformTime = glGetUniformLocation(programId, "time");
 	uniformViewPosition = glGetUniformLocation(programId, "viewPos");
@@ -265,9 +283,11 @@ int main(int argc, char* argv[]) {
 	uniformLight.material_specular = glGetUniformLocation(programId, "material.specular");
 	uniformLight.material_shininess = glGetUniformLocation(programId, "material.shininess");
 
+	// Parametri per la skybox
 	uniformProjectionMatrixCubeMap = glGetUniformLocation(programId_cubemap, "Projection");
 	uniformViewMatrixCubeMap = glGetUniformLocation(programId_cubemap, "View");
 
+	// Parametri per la riflessione
 	uniformModelMatrixReflection = glGetUniformLocation(programId_reflection, "Model");
 	uniformViewMatrixReflection = glGetUniformLocation(programId_reflection, "View");
 	uniformProjectionMatrixReflection = glGetUniformLocation(programId_reflection, "Projection");

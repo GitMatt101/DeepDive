@@ -19,7 +19,7 @@ extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 extern pair<vector<Mesh*>, vector<Mesh*>> sharks;
 extern vector<Mesh*> bubbles;
 
-extern Mesh* cubeMap;
+extern Mesh* skybox;
 extern View camera;
 extern Perspective cameraPerspective;
 
@@ -48,12 +48,14 @@ void initShader(void) {
 }
 
 void initScene(void) {
+	// Crea i vettori per le mesh
 	vector<Vertex> vertices;
 	vector<GLuint> indices;
 	vector<vec3> normals;
 	vector<vec2> textureCoordinates;
-	createPanel(1.0f, 1.0f, 16.0f, vec4(0.0f, 0.0f, 1.0f, 1.0f), &vertices, &indices, &normals, &textureCoordinates);
 
+	// Crea il terreno
+	createPanel(1.0f, 1.0f, 16.0f, vec4(0.0f, 0.0f, 1.0f, 1.0f), &vertices, &indices, &normals, &textureCoordinates);
 	Mesh* floor = new Mesh();
 	floor->setVertices(vertices);
 	floor->setIndices(indices);
@@ -68,6 +70,7 @@ void initScene(void) {
 	floor->setAnchorObj(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	scene.first.push_back(floor);
 
+	// Crea lo squalo tigre
 	vector<Mesh*> mesh;
 	loadAssImp((MESH_PATH + (string)"tiger_shark.obj").c_str(), &mesh, "Squalo Tigre");
 	for (Mesh* subMesh : mesh) {
@@ -80,8 +83,9 @@ void initScene(void) {
 	}
 	sharks.first = mesh;
 	scene.second.push_back(mesh);
-
 	mesh.clear();
+
+	// Crea lo squalo martello
 	loadAssImp((MESH_PATH + (string)"hammerhead_shark.obj").c_str(), &mesh, "Squalo Martello");
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
@@ -94,8 +98,9 @@ void initScene(void) {
 	}
 	sharks.second = mesh;
 	scene.second.push_back(mesh);
-
 	mesh.clear();
+
+	// Crea la statua
 	loadAssImp((MESH_PATH + (string)"12328_Statue_v1_L2.obj").c_str(), &mesh, "Statua");
 	for (Mesh* subMesh : mesh) {
 		subMesh->setModel(scale(*subMesh->getModel(), vec3(0.1f, 0.1f, 0.1f)));
@@ -104,10 +109,11 @@ void initScene(void) {
 		subMesh->setShader(shaders[2]);
 	}
 	scene.second.push_back(mesh);
-
 	mesh.clear();
+
 	int treasures = 5;
 	float step = 360.0f / (float)treasures;
+	// Crea i tesori
 	for (int i = 1; i <= 5; i++) {
 		loadAssImp((MESH_PATH + (string)"13457_Pile_of_Treasure_v1_L1.obj").c_str(), &mesh, "Tesoro");
 		for (Mesh* subMesh : mesh) {
@@ -128,6 +134,7 @@ void initScene(void) {
 	textureCoordinates.clear();
 	createEllipsoid(1.0f, 1.0f, 1.0f, 50, vec4(0.0f, 0.0f, 0.0f, 1.0f), &vertices, &indices, &normals, &textureCoordinates);
 
+	// Crea le bolle
 	Mesh* bubble1 = new Mesh();
 	bubble1->setModel(translate(*bubble1->getModel(), vec3(0.0f, -20.0f, 5.0f)));
 	Mesh* bubble2 = new Mesh();
@@ -228,13 +235,13 @@ void initShaders(void) {
 }
 
 void initCubeMap(void) {
-	cubeMap = new Mesh();
+	skybox = new Mesh();
 	vector<Vertex> vertices;
 	vector<GLuint> indices;
 	createCuboid(2.0f, 2.0f, 2.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 0.0f), &vertices, &indices);
-	cubeMap->setVertices(vertices);
-	cubeMap->setIndices(indices);
-	initMeshVAO(cubeMap);
+	skybox->setVertices(vertices);
+	skybox->setIndices(indices);
+	initMeshVAO(skybox);
 
 	vector<string> faces {
 		(string)SKYBOX_PATH + "front.jpg",

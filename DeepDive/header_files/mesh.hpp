@@ -13,10 +13,10 @@ class Mesh {
 		vector<vec2> textureCoordinates;
 		mat4 model;
 		GLuint VAO;
-		GLuint VBO_V;
-		GLuint VBO_C;
-		GLuint VBO_N;
-		GLuint VBO_T;
+		GLuint VBO_V;	// VBO vertici
+		GLuint VBO_C;	// VBO colori
+		GLuint VBO_N;	// VBO normali
+		GLuint VBO_T;	// VBO texture
 		GLuint EBO;
 		Shader shader;
 		MaterialType materialType;

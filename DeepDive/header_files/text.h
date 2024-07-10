@@ -1,20 +1,20 @@
 #pragma once
 #include "../lib.h"
 
-//Initializes Freetype library, setting up how the text has to be visualized.
+// Inizializza la libreria Freetype
 void initFreetype(void);
 
 /*
-* Visualizes the given text on the screen.
+* Visualizza del testo.
 * 
-* @param programId_text - ID of the program used to generate text.
-* @param projectionMatrix_text - Projection matrix used to create and transform text.
-* @param text - Text to visualize.
-* @param textVAO - VAO of the text.
-* @param textVBO - VBO of the text.
-* @param x - X value of the position where the text is going to be visualized.
-* @param y - Y value of the position where the text is going to be visualized.
-* @param scale - Size of the text in pixels.
-* @param color - Color of the text
+* @param programId_text - Id del programma di testo.
+* @param projectionMatrix_text - Matrice di proiezione del testo.
+* @param text - Testo da visualizzare.
+* @param textVAO - VAO del testo.
+* @param textVBO - VBO del testo.
+* @param x - X della posizione del testo.
+* @param y - Y della posizione del testo.
+* @param scale - Dimensione del testo in pixel.
+* @param color - Colore del testo.
 */
 void renderText(int programId_text, mat4 projectionMatrix_text, string text, unsigned int textVAO, unsigned int textVBO, float x, float y, float scale, vec3 color);

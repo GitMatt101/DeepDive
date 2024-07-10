@@ -1,27 +1,25 @@
 #pragma once
 #include "../lib.h"
 
-// Class used to setup the program and read the shaders.
 class ShaderMaker
 {
 	public:
 		/*
-		* Creates the program ID.
+		* Creates l'id del programma di shader.
 		* 
-		* @param vertexFile -  Vertex shader file path.
-		* @param fragmentFile - Fragment shader file path.
-		* @return The program's ID.
+		* @param vertexFile -  File del vertex shader.
+		* @param fragmentFile - File del fragment shader.
+		* @return L'id del programma.
 		*/
 		static GLuint createProgram(char* vertexFile, char* fragmentFile);
 
 		/*
-		* Reads the shader information.
+		* Legge il codice di un file shader.
 		* 
-		* @param shaderFile - Shader file path
+		* @param shaderFile - Percorso del file shader
 		*/
 		static char* readShaderSource(const char* shaderFile);
 
 	private:
-		// Empty constructor
 		ShaderMaker() {}
 };

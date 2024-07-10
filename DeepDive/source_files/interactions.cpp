@@ -6,8 +6,6 @@
 #include <iostream>
 using namespace std;
 
-#define TRACK_BALL_SPEED 50.0f
-
 extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 extern vector<Mesh*> bubbles;
 extern View camera;
@@ -23,17 +21,45 @@ extern bool movingTrackBall;
 extern int mouseX;
 extern int mouseY;
 
+/**
+* Calcola il raggio che congiunge la telecamera e la posizione del cursore nello spazio.
+* @param x - X del cursore.
+* @param y - Y del cursore.
+* @return Il raggio.
+*/
 vec3 getRay(int x, int y);
 
+/**
+* Calcola la distanza di intersezione tra una mesh e il raggio di click.
+* @param origin - Posizione della telecamera.
+* @param direction - Raggio di click.
+* @param mesh - Mesh da controllare per l'intersezione.
+* @return La distanza tra il click e la mesh.
+*/
 double getIntersectionDistance(vec3 origin, vec3 direction, Mesh* mesh);
 
+/**
+* Modifica la matrice Model di una mesh.
+* @param mesh - La mesh da modificare.
+* @param translationVector - Vettore di traslazione.
+* @param rotationVector - Vettore di rotazione.
+* @param rotationAngle - Angolo di rotazione.
+* @param scaleValue - Valore di scalatura.
+*/
 void modifyModelMatrix(Mesh* mesh, vec3 translationVector, vec3 rotationVector, GLfloat rotationAngle, GLfloat scaleValue);
 
+/**
+* Applica la trasformazione selezionata a una mesh.
+* @param mesh - La mesh da modificare.
+* @param transformationValue - Valore di trasformazione.
+*/
 void applyTransformation(Mesh* mesh, float transformationValue);
 
 void keyboardEvent(unsigned char key, int x, int y) {
 	Mesh* selectedMesh = NULL;
 	vector<Mesh*> selectedMeshes;
+
+	// Controlla se c'è una mesh selezionata
 	for (Mesh* mesh : scene.first)
 		if (mesh->isSelected()) selectedMesh = mesh;
 	for (vector<Mesh*> mesh : scene.second) {
@@ -47,53 +73,54 @@ void keyboardEvent(unsigned char key, int x, int y) {
 	for (Mesh* bubble : bubbles)
 		if (bubble->isSelected()) selectedMesh = bubble;
 
+	// Filtra il tasto premuto
 	switch (key) {
-		case 27:
+		case 27:	// ESC
 			glutLeaveMainLoop();
 			break;
-		case 'w':	// Forward
+		case 'w':	// Avanti
 			moveCameraForward();
 			break;
-		case 'a':	// Left
+		case 'a':	// Sinistra
 			moveCameraLeft();
 			break;
-		case 's':	// Backward
+		case 's':	// Indietro
 			moveCameraBackward();
 			break;
-		case 'd':	// Right
+		case 'd':	// Destra
 			moveCameraRight();
 			break;
-		case 'e':	// Upward
+		case 'e':	// In alto
 			moveCameraUpward();
 			break;
-		case 'q':	// Downward
+		case 'q':	// In basso
 			moveCameraDownward();
 			break;
-		case 'x':	// X axis
+		case 'x':	// Asse X
 			currentAxis = X;
 			workingAxis = "X";
 			break;
-		case 'y':	// Y axis
+		case 'y':	// Asse Y
 			currentAxis = Y;
 			workingAxis = "Y";
 			break;
-		case 'z':	// Z axis
+		case 'z':	// Asse Z
 			currentAxis = Z;
 			workingAxis = "Z";
 			break;
-		case 'T':	// Translation
+		case 'T':	// Traslazione
 			currentTransformation = TRANSLATION;
 			transformation = "Translation";
 			break;
-		case 'R':	// Rotation
+		case 'R':	// Rozione
 			currentTransformation = ROTATION;
 			transformation = "Rotation";
 			break;
-		case 'S':	// Scale
+		case 'S':	// Scalatura
 			currentTransformation = SCALE;
 			transformation = "Scale";
 			break;
-		case '+':	// Increase
+		case '+':	// Incrementa
 			if (selectedMesh != NULL)
 				applyTransformation(selectedMesh, 0.05f);
 			else if (selectedMeshes.size() != 0) {
@@ -101,7 +128,7 @@ void keyboardEvent(unsigned char key, int x, int y) {
 					applyTransformation(mesh, 0.05f);
 			}
 			break;
-		case '-':	// Decrease
+		case '-':	// Decrementa
 			if (selectedMesh != NULL)
 				applyTransformation(selectedMesh, -0.05f);
 			else if (selectedMeshes.size() != 0) {
@@ -119,7 +146,7 @@ void zoom(int button, int direction, int x, int y) {
 	if (direction > 0) cameraPerspective.fov -= 2.0f;
 	else cameraPerspective.fov += 2.0f;
 
-	// Limits the perspective if it goes too far or too close
+	// Limita la prospettiva se lo zoom è troppo lontano o troppo vicino
 	if (cameraPerspective.fov < 1.0f) cameraPerspective.fov = 1.0f;
 	if (cameraPerspective.fov > 180.0f) cameraPerspective.fov = 180.0f;
 
@@ -129,11 +156,11 @@ void zoom(int button, int direction, int x, int y) {
 void mouse(int button, int state, int x, int y) {
 	if (state != GLUT_DOWN) return;
 
+	// Filtra il click
 	switch (button) {
 		case GLUT_LEFT_BUTTON:
-			vec3 ray = getRay(x, y);
-			double closestIntersection = 0.0f;
-			Mesh* previousIntersectedMesh = NULL;
+		{
+			// Deseleziona la mesh precedentemente selezionata
 			for (Mesh* mesh : scene.first)
 				if (mesh->isSelected()) mesh->toggleSelection();
 			for (vector<Mesh*> mesh : scene.second) {
@@ -143,6 +170,11 @@ void mouse(int button, int state, int x, int y) {
 			for (Mesh* bubble : bubbles)
 				if (bubble->isSelected()) bubble->toggleSelection();
 
+			vec3 ray = getRay(x, y);
+			double closestIntersection = 0.0f;
+
+			Mesh* previousIntersectedMesh = NULL;
+			// Controlla se il click interseca una mesh, se ne trova una la seleziona e deseleziona quella precedente
 			for (Mesh* mesh : scene.first) {
 				double intersectionDistance = getIntersectionDistance(camera.position, ray, mesh);
 				if (intersectionDistance > 0.0f && (intersectionDistance < closestIntersection || previousIntersectedMesh == NULL)) {
@@ -176,6 +208,9 @@ void mouse(int button, int state, int x, int y) {
 				}
 			}
 			break;
+		}
+		default:
+			break;
 	}
 	glutPostRedisplay();
 }
@@ -183,14 +218,14 @@ void mouse(int button, int state, int x, int y) {
 vec3 getRay(int x, int y) {
 	// Normalized Device Coordinates
 	vec4 ndc = vec4(2.0f * x / WIDTH - 1.0f, 1.0f - 2.0f * y / HEIGHT, -1.0f, 1.0f);
-	// Clip coordinates
+	// Coordinate di clip
 	vec4 clipCoordinates = vec4(ndc.x, ndc.y, ndc.z, 1.0f);
-	// View coordinates
+	// Coordinate di vista
 	vec4 viewCoordinates = inverse(projectionMatrix) * clipCoordinates;
 	viewCoordinates.w = 1.0;
-	// World coordinates
+	// Coordinate nel mondo
 	vec4 worldCoordinates = inverse(view) * viewCoordinates;
-	// Direction of the ray that starts from the camera and reaches the clicked point
+	// Direction del raggio che parte congiunge la telecamera con la posizione del cursore
 	vec3 ray = normalize(vec3(worldCoordinates) - vec3(camera.position));
 
 	return ray;
@@ -246,14 +281,4 @@ void applyTransformation(Mesh* mesh, float transformationValue) {
 		default:
 			return;
 	}
-}
-
-vec3 getTrackBallPoint(float x, float y) {
-	float xNDC = (2.0f * x - (float)WIDTH) / (float)WIDTH;
-	float yNDC = ((float)HEIGHT - 2.0f * y) / (float)HEIGHT;
-
-	float arg = 1 - pow(xNDC, 2) - pow(yNDC, 2);
-	float zNDC = arg > 0 ? sqrt(arg) : 0;
-
-	return normalize(vec3(xNDC, yNDC, zNDC));
 }

@@ -13,13 +13,14 @@ void shaderMenu(int option);
 void mainMenu(int option);
 
 void buildOpenGLMenu() {
+	// Menu per la selezione dei materiali
 	int materialSubMenu = glutCreateMenu(materialMenu);
-
 	glutAddMenuEntry(materials[MaterialType::EMERALD].name.c_str(), MaterialType::EMERALD);
 	glutAddMenuEntry(materials[MaterialType::BRASS].name.c_str(), MaterialType::BRASS);
 	glutAddMenuEntry(materials[MaterialType::SLATE].name.c_str(), MaterialType::SLATE);
 	glutAddMenuEntry(materials[MaterialType::YELLOW].name.c_str(), MaterialType::YELLOW);
 
+	// Menu per la gestione delle shader
 	int shaderSubMenu = glutCreateMenu(shaderMenu);
 	glutAddMenuEntry(shaders[ShaderOption::NONE].name.c_str(), ShaderOption::NONE);
 	glutAddMenuEntry(shaders[ShaderOption::GOURAD_SHADING].name.c_str(), ShaderOption::GOURAD_SHADING);

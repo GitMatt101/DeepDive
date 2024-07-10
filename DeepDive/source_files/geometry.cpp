@@ -5,21 +5,22 @@ void createCuboid(float width, float height, float depth, vec4 color1, vec4 colo
 	float y = height / 2;
 	float z = depth / 2;
 
-	// Front
+	// Faccia frontale
 	vertices->push_back(Vertex(vec3(-x, y, z), color1));
 	vertices->push_back(Vertex(vec3(x, y, z), color2));
 	vertices->push_back(Vertex(vec3(x, -y, z), color1));
 	vertices->push_back(Vertex(vec3(-x, -y, z), color2));
 
-	// Back
+	// Faccia Posteriore
 	vertices->push_back(Vertex(vec3(-x, y, -z), color1));
 	vertices->push_back(Vertex(vec3(x, y, -z), color2));
 	vertices->push_back(Vertex(vec3(x, -y, -z), color1));
 	vertices->push_back(Vertex(vec3(-x, -y, -z), color2));
 
+	// Centro del parallelepipedo
 	vertices->push_back(Vertex(vec3(0.0f, 0.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f)));
 
-	// Indices
+	// Indici
 	indices->push_back(0); indices->push_back(1); indices->push_back(2);
 	indices->push_back(2); indices->push_back(3); indices->push_back(0);
 	indices->push_back(1); indices->push_back(5); indices->push_back(6);
