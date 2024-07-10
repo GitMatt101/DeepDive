@@ -14,6 +14,7 @@
 
 pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 pair<vector<Mesh*>, vector<Mesh*>> sharks;
+vector<Mesh*> bubbles;
 Mesh* cubeMap;
 View camera;
 Perspective cameraPerspective;
@@ -30,14 +31,16 @@ mat4 view;
 unsigned int programId;
 unsigned int programId_text;
 unsigned int programId_cubemap;
+unsigned int programId_reflection;
 
-unsigned int uniformProjectionMatrix, uniformProjectionMatrixCubeMap;
-unsigned int uniformViewMatrix, uniformViewMatrixCubeMap;
-unsigned int uniformModelMatrix;
-unsigned int uniformViewPosition;
+unsigned int uniformProjectionMatrix, uniformProjectionMatrixCubeMap, uniformProjectionMatrixReflection;
+unsigned int uniformViewMatrix, uniformViewMatrixCubeMap, uniformViewMatrixReflection;
+unsigned int uniformModelMatrix, uniformModelMatrixReflection;
+unsigned int uniformViewPosition, uniformViewPositionReflection;
 unsigned int uniformShader;
 unsigned int uniformTime;
 unsigned int uniformTexture;
+unsigned int uniformCubeMapReflection;
 
 GLuint textVAO;
 GLuint textVBO;
@@ -77,6 +80,18 @@ void drawScene(void) {
 	glDrawElements(GL_TRIANGLES, cubeMap->getIndices()->size() * sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glDepthMask(GL_TRUE);
+
+	glUseProgram(programId_reflection);
+	for (Mesh* bubble : bubbles) {
+		glUniformMatrix4fv(uniformProjectionMatrixReflection, 1, GL_FALSE, value_ptr(projectionMatrix));
+		glUniformMatrix4fv(uniformModelMatrixReflection, 1, GL_FALSE, value_ptr(*bubble->getModel()));
+		glUniformMatrix4fv(uniformViewMatrixReflection, 1, GL_FALSE, value_ptr(view));
+		glUniform3f(uniformViewPositionReflection, camera.position.x, camera.position.y, camera.position.z);
+		glBindVertexArray(*bubble->getVAO());
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+		glDrawElements(GL_TRIANGLES, (bubble->getIndices()->size() - 1) * sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 
 	glUseProgram(programId);
 	glPointSize(10.0f);
@@ -152,6 +167,7 @@ void drawScene(void) {
 
 void update(int value)
 {
+	// Movimento degli squali
 	float seconds = 5.0f;
 	float angle = 360.0f / ((float)FPS * 5.0f);
 	float circumference = 2.0f * (float)PI * 200.0f;
@@ -164,6 +180,19 @@ void update(int value)
 		mesh->setModel(rotate(*mesh->getModel(), radians(angle), vec3(0.0f, 0.0f, 1.0f)));
 		mesh->setModel(translate(*mesh->getModel(), vec3(1.0f, 0.0f, 0.0f) * movement));
 	}
+
+	float bubbleMovement = 0.1f;
+	static float currentPosition = 0.0f;
+	static float cyclic = 0.0f;
+	cyclic += 3.0f;
+	currentPosition += bubbleMovement * 0.1f;
+	if (currentPosition >= 5.0f) {
+		bubbleMovement = -currentPosition * 10.0f;
+		currentPosition = 0.0f;
+	}
+	for (Mesh* bubble : bubbles)
+		bubble->setModel(translate(*bubble->getModel(), vec3(cos(radians(cyclic)) * 0.1f, bubbleMovement, sin(radians(cyclic)) * 0.1f)));
+
 	lightAngle += 1.0f;
 	glutTimerFunc(1000.0f / (float)FPS, update, 0);
 	glutPostRedisplay();
@@ -221,6 +250,12 @@ int main(int argc, char* argv[]) {
 
 	uniformProjectionMatrixCubeMap = glGetUniformLocation(programId_cubemap, "Projection");
 	uniformViewMatrixCubeMap = glGetUniformLocation(programId_cubemap, "View");
+
+	uniformModelMatrixReflection = glGetUniformLocation(programId_reflection, "Model");
+	uniformViewMatrixReflection = glGetUniformLocation(programId_reflection, "View");
+	uniformProjectionMatrixReflection = glGetUniformLocation(programId_reflection, "Projection");
+	uniformViewPositionReflection = glGetUniformLocation(programId_reflection, "viewPos");
+	uniformCubeMapReflection = glGetUniformLocation(programId_reflection, "cubemap");
 
 	glutMainLoop();
 }

@@ -11,11 +11,14 @@
 extern unsigned int programId;
 extern unsigned int programId_text;
 extern unsigned int programId_cubemap;
+extern unsigned int programId_reflection;
 
 extern unsigned int cubeMapTexture;
 
 extern pair<vector<Mesh*>, vector<vector<Mesh*>>> scene;
 extern pair<vector<Mesh*>, vector<Mesh*>> sharks;
+extern vector<Mesh*> bubbles;
+
 extern Mesh* cubeMap;
 extern View camera;
 extern Perspective cameraPerspective;
@@ -38,6 +41,10 @@ void initShader(void) {
 	vertexShader = (char*)"vertexShader_CubeMap.glsl";
 	fragmentShader = (char*)"fragmentShader_CubeMap.glsl";
 	programId_cubemap = ShaderMaker::createProgram(vertexShader, fragmentShader);
+
+	vertexShader = (char*)"vertexShader_Reflection.glsl";
+	fragmentShader = (char*)"fragmentShader_Reflection.glsl";
+	programId_reflection = ShaderMaker::createProgram(vertexShader, fragmentShader);
 }
 
 void initScene(void) {
@@ -98,6 +105,32 @@ void initScene(void) {
 		subMesh->setShader(shaders[2]);
 	}
 	scene.second.push_back(mesh);
+
+	vertices.clear();
+	indices.clear();
+	normals.clear();
+	textureCoordinates.clear();
+	createEllipsoid(1.0f, 1.0f, 1.0f, 50, vec4(0.0f, 0.0f, 0.0f, 1.0f), &vertices, &indices, &normals, &textureCoordinates);
+
+	Mesh* bubble1 = new Mesh();
+	bubble1->setModel(translate(*bubble1->getModel(), vec3(0.0f, -20.0f, 5.0f)));
+	Mesh* bubble2 = new Mesh();
+	bubble2->setModel(translate(*bubble2->getModel(), vec3(-5.0f, -18.0f, -5.0f)));
+	Mesh* bubble3 = new Mesh();
+	bubble3->setModel(translate(*bubble3->getModel(), vec3(5.0f, -16.0f, -5.0f)));
+	bubbles.push_back(bubble1);
+	bubbles.push_back(bubble2);
+	bubbles.push_back(bubble3);
+
+	for (Mesh* bubble : bubbles) {
+		bubble->setVertices(vertices);
+		bubble->setIndices(indices);
+		bubble->setNormals(normals);
+		bubble->setTextureCoordinates(textureCoordinates);
+		bubble->setShader(shaders[1]);
+		bubble->setModel(scale(*bubble->getModel(), vec3(0.5f, 0.5f, 0.5f)));
+		initMeshVAO(bubble);
+	}
 
 	for (Mesh* mesh : scene.first)
 		initMeshVAO(mesh);
